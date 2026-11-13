@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="data:," />
+    <title>KALORIKU!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --green:#059669;
+        --green-dark:#047857;
+        --green-2:#10B981;
+        --orange:#EA580C;
+        --orange-dark:#C2410C;
+        --bg:#F3FBF5;
+        --card:#FFFFFF;
+        --ink:#0F172A;
+        --muted:#475569;
+        --border:#E1F2ED;
+        --red:#DC2626;
+        --red-bg:#FEF2F2;
+        --green-bg:#ECFDF5;
+        --shadow:0 2px 10px rgba(5,150,105,.08), 0 1px 3px rgba(15,23,42,.05);
+      }
+      *{ box-sizing:border-box; }
+      html{ -webkit-text-size-adjust:100%; }
+      body{
+        margin:0;
+        background:var(--bg);
+        color:var(--ink);
+        font-family:'Nunito',system-ui,sans-serif;
+        font-size:16px;
+        line-height:1.45;
+      }
+      button, input{ font-family:inherit; }
+      button{ cursor:pointer; }
+      :focus-visible{ outline:3px solid var(--orange); outline-offset:2px; border-radius:6px; }
+
+      .app{ max-width:480px; margin:0 auto; padding:20px 16px 110px; }
+
+      /* ---------- Header ---------- */
+      header{ padding:4px 2px 14px; }
+      header h1{
+        font-family:'Fredoka',sans-serif; font-weight:700; font-size:34px;
+        letter-spacing:.5px; color:var(--green-dark); margin:0; line-height:1.05;
+      }
+      header .sub{ margin:4px 0 0; font-size:16px; font-weight:700; color:var(--ink); }
+      header .date{ margin:2px 0 0; font-size:14px; font-weight:600; color:var(--muted); }
+
+      h2{
+        font-family:'Fredoka',sans-serif; font-weight:600; font-size:20px;
+        margin:0 0 12px; color:var(--ink);
+      }
+      .card{
+        background:var(--card); border:1px solid var(--border); border-radius:18px;
+        box-shadow:var(--shadow); padding:18px; margin-bottom:16px;
+      }
+
+      /* ---------- Hero ring ---------- */
+      .ring-wrap{ display:flex; flex-direction:column; align-items:center; text-align:center; }
+      .ring-box{ position:relative; width:212px; height:212px; }
+      .ring-box svg{ display:block; transform:rotate(-90deg); }
+      .ring-track{ stroke:#DDF3E9; }
+      .ring-prog{ stroke:var(--green); transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1), stroke .3s; stroke-linecap:round; }
+      .ring-prog.over{ stroke:var(--orange); }
+      .ring-center{
+        position:absolute; inset:0; display:flex; flex-direction:column;
+        align-items:center; justify-content:center; padding:0 26px;
+      }
+      .ring-num{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:46px; line-height:1; color:var(--ink); }
+      .ring-unit{ font-size:13px; font-weight:800; color:var(--muted); letter-spacing:.4px; margin-top:2px; }
+      .ring-target{ margin-top:10px; font-size:15px; font-weight:700; color:var(--muted); }
+      .ring-target strong{ color:var(--ink); }
+      .ring-status{ margin-top:4px; font-size:15px; font-weight:800; }
+      .ring-status.ok{ color:var(--green-dark); }
+      .ring-status.over{ color:var(--orange-dark); }
+
+      .equiv{ margin-top:18px; width:100%; }
+      .equiv h3{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:16px; margin:0 0 10px; text-align:left; }
+      .equiv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+      .equiv-chip{
+        background:var(--green-bg); border:1px solid var(--border); border-radius:12px;
+        padding:10px 12px; display:flex; align-items:center; gap:10px; text-align:left;
+      }
+      .equiv-chip svg{ flex:0 0 auto; color:var(--green-dark); }
+      .equiv-chip .v{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:17px; line-height:1.1; }
+      .equiv-chip .l{ font-size:12.5px; font-weight:700; color:var(--muted); line-height:1.2; }
+      .empty-invite{ margin-top:16px; font-size:15px; font-weight:600; color:var(--muted); }
+      .btn-catalog{
+        margin-top:10px; min-height:44px; padding:10px 20px; border:none; border-radius:12px;
+        background:var(--orange); color:#fff; font-weight:800; font-size:15px;
+      }
+      .btn-catalog:active{ background:var(--orange-dark); }
+
+      /* ---------- Plate list ---------- */
+      .plate-item{
+        display:flex; align-items:center; gap:12px; padding:11px 0;
+        border-bottom:1px solid var(--border);
+      }
+      .plate-item:last-of-type{ border-bottom:none; }
+      .plate-item .info{ flex:1; min-width:0; }
+      .plate-item .name{ font-weight:800; font-size:15.5px; }
+      .plate-item .portion{ font-size:13px; font-weight:600; color:var(--muted); }
+      .plate-item .kcal{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:18px; white-space:nowrap; }
+      .plate-item .kcal small{ font-size:12px; color:var(--muted); font-family:'Nunito',sans-serif; font-weight:700; }
+      .btn-trash{
+        flex:0 0 auto; width:44px; height:44px; border:none; border-radius:10px;
+        background:var(--red-bg); color:var(--red); display:flex; align-items:center; justify-content:center;
+      }
+      .total-bar{
+        margin-top:14px; background:var(--green-bg); border-radius:12px;
+        padding:12px 14px; display:flex; justify-content:space-between; align-items:center;
+      }
+      .total-bar .t{ font-weight:800; font-size:15px; }
+      .total-bar .n{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:22px; color:var(--green-dark); }
+      .btn-clear{
+        margin-top:12px; width:100%; min-height:44px; border:1.5px solid var(--red); border-radius:12px;
+        background:#fff; color:var(--red); font-weight:800; font-size:15px;
+      }
+      .confirm-row{ margin-top:12px; background:var(--red-bg); border-radius:12px; padding:12px; }
+      .confirm-row p{ margin:0 0 10px; font-weight:800; font-size:14.5px; }
+      .confirm-row .row{ display:flex; gap:10px; }
+      .confirm-row button{ flex:1; min-height:44px; border-radius:10px; font-weight:800; font-size:14.5px; }
+      .btn-yes{ background:var(--red); color:#fff; border:none; }
+      .btn-no{ background:#fff; color:var(--ink); border:1.5px solid var(--border); }
+      .empty-state{ text-align:center; padding:10px 6px 4px; }
+      .empty-state p{ margin:0; font-weight:600; color:var(--muted); font-size:15px; }
+      .empty-state strong{ color:var(--ink); }
+
+      /* ---------- Target ---------- */
+      .presets{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+      .preset{
+        min-height:56px; border:1.5px solid var(--border); background:#fff; border-radius:12px;
+        padding:8px 4px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+      }
+      .preset .pl{ font-size:13px; font-weight:800; color:var(--muted); }
+      .preset .pv{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:17px; color:var(--ink); }
+      .preset.active{ border-color:var(--green); background:var(--green-bg); }
+      .preset.active .pl{ color:var(--green-dark); }
+      .slider-row{ margin-top:16px; }
+      .slider-row label{ display:flex; justify-content:space-between; align-items:baseline; font-weight:800; font-size:14.5px; margin-bottom:4px; }
+      .slider-row label output{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:18px; color:var(--green-dark); }
+      input[type="range"]{ width:100%; height:44px; accent-color:var(--green); margin:0; }
+      .slider-scale{ display:flex; justify-content:space-between; font-size:12px; font-weight:700; color:var(--muted); margin-top:-6px; }
+      .target-note{ margin:10px 0 0; font-size:13px; font-weight:600; color:var(--muted); }
+
+      /* ---------- History chart ---------- */
+      .chart{ display:flex; align-items:flex-end; gap:6px; height:150px; padding-top:22px; }
+      .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; position:relative; }
+      .bar-val{
+        position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+        font-size:11.5px; font-weight:800; color:var(--muted); white-space:nowrap;
+      }
+      .bar-col.today .bar-val{ color:var(--green-dark); }
+      .bar{ width:100%; max-width:34px; border-radius:7px 7px 3px 3px; background:#A9DFCB; min-height:4px; }
+      .bar-col.today .bar{ background:var(--green); }
+      .bar-col.over .bar{ background:var(--orange); }
+      .chart-labels{ display:flex; gap:6px; margin-top:8px; }
+      .chart-labels span{ flex:1; text-align:center; font-size:12.5px; font-weight:800; color:var(--muted); }
+      .chart-labels span.today{ color:var(--green-dark); }
+
+      /* ---------- Disclaimer ---------- */
+      .disclaimer{ font-size:12.5px; font-weight:600; color:var(--muted); text-align:center; padding:2px 10px 0; margin:0; }
+
+      /* ---------- Catalog ---------- */
+      .catalog-tools{
+        position:sticky; top:0; z-index:20; background:var(--bg);
+        padding:12px 0 10px; margin:0 -2px;
+      }
+      .search-box{ position:relative; }
+      .search-box svg{ position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+      .search-box input{
+        width:100%; min-height:48px; border:1.5px solid var(--border); border-radius:12px;
+        background:#fff; padding:12px 14px 12px 44px; font-size:16px; font-weight:600; color:var(--ink);
+      }
+      .search-box input::placeholder{ color:var(--muted); }
+      .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+      .chip{
+        min-height:44px; padding:9px 15px; border-radius:999px; border:1.5px solid var(--border);
+        background:#fff; font-weight:800; font-size:14px; color:var(--ink);
+      }
+      .chip.active{ background:var(--green); border-color:var(--green); color:#fff; }
+
+      @keyframes cardIn{
+        from{ opacity:0; transform:translateY(16px) scale(.96); }
+        to{ opacity:1; transform:translateY(0) scale(1); }
+      }
+      .food-card{
+        background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow);
+        padding:14px; margin-bottom:12px; display:flex; align-items:center; gap:13px;
+        animation:cardIn .38s cubic-bezier(.34,1.45,.64,1) both;
+      }
+      .mono{
+        flex:0 0 auto; width:52px; height:52px; border-radius:14px; color:#fff;
+        font-family:'Fredoka',sans-serif; font-weight:600; font-size:19px;
+        display:flex; align-items:center; justify-content:center; letter-spacing:.5px;
+      }
+      .food-card .info{ flex:1; min-width:0; }
+      .food-card .name{ font-weight:800; font-size:16px; line-height:1.25; }
+      .food-card .portion{ font-size:13px; font-weight:600; color:var(--muted); }
+      .food-card .right{ text-align:right; flex:0 0 auto; }
+      .food-card .kcal{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:24px; line-height:1; }
+      .food-card .kcal small{ display:block; font-family:'Nunito',sans-serif; font-size:11.5px; font-weight:800; color:var(--muted); margin-top:2px; }
+      .btn-add{
+        margin-top:8px; min-height:44px; padding:9px 16px; border:none; border-radius:11px;
+        background:var(--orange); color:#fff; font-weight:800; font-size:14.5px;
+        display:inline-flex; align-items:center; gap:5px;
+      }
+      .btn-add:active{ background:var(--orange-dark); }
+      .no-result{ text-align:center; padding:28px 10px; font-weight:700; color:var(--muted); }
+
+      /* ---------- Quiz ---------- */
+      .quiz-start{ text-align:center; padding:8px 4px; }
+      .quiz-start p{ font-weight:600; color:var(--muted); font-size:15.5px; margin:0 0 14px; }
+      .quiz-start p strong{ color:var(--ink); }
+      .best-badge{
+        display:inline-block; background:var(--green-bg); border:1px solid var(--border);
+        border-radius:999px; padding:9px 18px; font-weight:800; font-size:14.5px; color:var(--green-dark);
+        margin-bottom:18px;
+      }
+      .btn-primary{
+        min-height:50px; padding:12px 26px; border:none; border-radius:13px;
+        background:var(--orange); color:#fff; font-weight:800; font-size:16.5px;
+      }
+      .btn-primary:active{ background:var(--orange-dark); }
+      .quiz-progress{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+      .quiz-progress .rp{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:16px; }
+      .quiz-progress .rs{ font-weight:800; font-size:14px; color:var(--muted); }
+      .progress-track{ height:9px; background:#DDF3E9; border-radius:99px; overflow:hidden; margin-bottom:18px; }
+      .progress-fill{ height:100%; background:var(--green-2); border-radius:99px; transition:width .4s ease; }
+      .quiz-food{ text-align:center; margin-bottom:18px; }
+      .quiz-food .mono{ width:64px; height:64px; font-size:23px; border-radius:17px; margin:0 auto 10px; }
+      .quiz-food .name{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:24px; line-height:1.2; }
+      .quiz-food .portion{ font-weight:700; color:var(--muted); font-size:14.5px; margin-top:2px; }
+      .quiz-q{ text-align:center; font-weight:800; font-size:15.5px; margin:0 0 14px; }
+      .quiz-options{ display:flex; flex-direction:column; gap:10px; }
+      .quiz-opt{
+        min-height:56px; border:1.5px solid var(--border); background:#fff; border-radius:13px;
+        font-family:'Fredoka',sans-serif; font-weight:600; font-size:20px; color:var(--ink);
+        display:flex; align-items:center; justify-content:center; gap:6px;
+      }
+      .quiz-opt small{ font-family:'Nunito',sans-serif; font-size:13px; font-weight:800; color:var(--muted); }
+      .quiz-opt.correct{ background:var(--green-bg); border-color:var(--green); color:var(--green-dark); }
+      .quiz-opt.wrong{ background:var(--red-bg); border-color:var(--red); color:var(--red); }
+      .quiz-opt:disabled{ cursor:default; opacity:1; }
+      .quiz-fact{
+        margin-top:16px; background:var(--green-bg); border:1px solid var(--border);
+        border-radius:12px; padding:13px 15px; font-weight:700; font-size:14.5px;
+      }
+      .quiz-fact.bad{ background:var(--red-bg); }
+      .quiz-fact .verdict{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:16.5px; display:block; margin-bottom:3px; }
+      .quiz-fact .verdict.good{ color:var(--green-dark); }
+      .quiz-fact .verdict.bad{ color:var(--red); }
+      .btn-next{ margin-top:14px; width:100%; }
+      .quiz-result{ text-align:center; padding:10px 4px; }
+      .quiz-result .score{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:58px; line-height:1; color:var(--green-dark); }
+      .quiz-result .score small{ font-size:26px; color:var(--muted); }
+      .quiz-result .msg{ font-weight:700; font-size:16.5px; margin:12px 0 6px; }
+      .quiz-result .newbest{ font-weight:800; color:var(--orange-dark); font-size:14.5px; margin:0 0 16px; }
+      .quiz-result .plain{ margin:0 0 16px; }
+
+      /* ---------- Bottom nav ---------- */
+      .bottom-nav{
+        position:fixed; left:50%; transform:translateX(-50%); bottom:0;
+        width:100%; max-width:480px; background:#fff; border-top:1.5px solid var(--border);
+        display:flex; z-index:40; padding-bottom:env(safe-area-inset-bottom);
+      }
+      .nav-btn{
+        flex:1; min-height:62px; border:none; background:none; color:var(--muted);
+        display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+        font-weight:800; font-size:13px; padding:8px 0 6px;
+      }
+      .nav-btn.active{ color:var(--green-dark); }
+      .nav-btn.active svg{ color:var(--green); }
+
+      /* ---------- Portion sheet ---------- */
+      .sheet-backdrop{
+        position:fixed; inset:0; background:rgba(15,23,42,.48); z-index:50;
+        opacity:0; pointer-events:none; transition:opacity .25s ease;
+      }
+      .sheet-backdrop.open{ opacity:1; pointer-events:auto; }
+      .sheet{
+        position:fixed; left:50%; bottom:0; width:100%; max-width:480px; z-index:51;
+        background:#fff; border-radius:22px 22px 0 0; padding:20px 18px calc(18px + env(safe-area-inset-bottom));
+        transform:translate(-50%,105%); transition:transform .32s cubic-bezier(.22,1,.36,1);
+        max-height:82vh; overflow-y:auto;
+      }
+      .sheet.open{ transform:translate(-50%,0); }
+      .sheet h3{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:21px; margin:0 0 2px; }
+      .sheet .sheet-sub{ font-weight:700; color:var(--muted); font-size:14px; margin:0 0 16px; }
+      .portion-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+      .portion-opt{
+        min-height:74px; border:1.5px solid var(--border); background:#fff; border-radius:14px;
+        display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; padding:10px;
+      }
+      .portion-opt .pm{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:22px; color:var(--ink); }
+      .portion-opt .pd{ font-size:12.5px; font-weight:700; color:var(--muted); }
+      .portion-opt .pk{ font-size:14px; font-weight:800; color:var(--green-dark); }
+      .portion-opt:active{ border-color:var(--green); background:var(--green-bg); }
+      .btn-cancel{
+        margin-top:14px; width:100%; min-height:48px; border:1.5px solid var(--border); border-radius:12px;
+        background:#fff; font-weight:800; font-size:15px; color:var(--ink);
+      }
+
+      /* ---------- Toast ---------- */
+      .toast{
+        position:fixed; left:50%; bottom:calc(78px + env(safe-area-inset-bottom)); z-index:60;
+        transform:translate(-50%,24px); opacity:0; pointer-events:none;
+        background:#065F46; color:#fff; font-weight:800; font-size:15px;
+        padding:13px 20px; border-radius:13px; box-shadow:0 8px 24px rgba(6,95,70,.35);
+        transition:transform .3s cubic-bezier(.22,1,.36,1), opacity .3s ease;
+        max-width:calc(100% - 32px); text-align:center;
+      }
+      .toast.show{ transform:translate(-50%,0); opacity:1; }
+
+      /* ---------- Confetti ---------- */
+      .confetti-piece{ position:fixed; top:-16px; z-index:70; pointer-events:none; border-radius:2px; }
+      @keyframes confettiFall{
+        to{ transform:translate(var(--dx), 105vh) rotate(var(--rot)); opacity:.9; }
+      }
+
+      .tab-panel{ display:none; }
+      .tab-panel.active{ display:block; }
+
+      @media (prefers-reduced-motion: reduce){
+        *, *::before, *::after{ animation:none !important; transition:none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1>KALORIKU!</h1>
+        <p class="sub">Berapa kalori makananmu hari ini?</p>
+        <p class="date" id="todayDate"></p>
+      </header>
+
+      <!-- ============ TAB PIRING ============ -->
+      <section class="tab-panel active" id="panel-piring">
+        <div class="card ring-wrap">
+          <div class="ring-box">
+            <svg width="212" height="212" viewBox="0 0 212 212" role="img" aria-label="Cincin kemajuan kalori hari ini">
+              <circle class="ring-track" cx="106" cy="106" r="92" fill="none" stroke-width="17" />
+              <circle class="ring-prog" id="ringProg" cx="106" cy="106" r="92" fill="none" stroke-width="17" />
+            </svg>
+            <div class="ring-center">
+              <div class="ring-num" id="ringNum">0</div>
+              <div class="ring-unit">KKAL HARI INI</div>
+            </div>
+          </div>
+          <p class="ring-target" id="ringTarget"></p>
+          <p class="ring-status ok" id="ringStatus"></p>
+          <div id="equivArea"></div>
+        </div>
+
+        <div class="card">
+          <h2>Piring Hari Ini</h2>
+          <div id="plateList"></div>
+          <div id="plateFooter"></div>
+        </div>
+
+        <div class="card">
+          <h2>Target Harian</h2>
+          <div class="presets" id="presets">
+            <button type="button" class="preset" data-target="2000"><span class="pl">Umum</span><span class="pv">2.000</span></button>
+            <button type="button" class="preset" data-target="2250"><span class="pl">Wanita</span><span class="pv">2.250</span></button>
+            <button type="button" class="preset" data-target="2650"><span class="pl">Pria</span><span class="pv">2.650</span></button>
+          </div>
+          <div class="slider-row">
+            <label for="targetSlider">Atur sendiri <output id="targetOut" for="targetSlider">2.000 kkal</output></label>
+            <input type="range" id="targetSlider" min="1200" max="3500" step="50" value="2000" />
+            <div class="slider-scale"><span>1.200</span><span>3.500</span></div>
+          </div>
+          <p class="target-note">Acuan Angka Kecukupan Gizi (AKG) 2019 dari Kemenkes. Sesuaikan dengan kebutuhan dan aktivitasmu.</p>
+        </div>
+
+        <div class="card">
+          <h2>Riwayat 7 Hari</h2>
+          <div class="chart" id="chart"></div>
+          <div class="chart-labels" id="chartLabels"></div>
+        </div>
+
+        <p class="disclaimer">Angka perkiraan per porsi umum — sumber: TKPI Kemenkes, FatSecret, Nibbs, Halodoc. Resep dan ukuran asli bisa beda 20–30%.</p>
+      </section>
+
+      <!-- ============ TAB KATALOG ============ -->
+      <section class="tab-panel" id="panel-katalog">
+        <div class="catalog-tools">
+          <div class="search-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+            <input type="search" id="searchInput" placeholder="Cari makanan… misalnya: rendang" aria-label="Cari makanan" autocomplete="off" />
+          </div>
+          <div class="chips" id="categoryChips" role="group" aria-label="Filter kategori"></div>
+        </div>
+        <div id="foodList"></div>
+      </section>
+
+      <!-- ============ TAB TEBAK ============ -->
+      <section class="tab-panel" id="panel-tebak">
+        <div class="card" id="quizArea"></div>
+      </section>
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <button type="button" class="nav-btn active" data-tab="piring" aria-label="Tab Piring">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></svg>
+        Piring
+      </button>
+      <button type="button" class="nav-btn" data-tab="katalog" aria-label="Tab Katalog">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h13"/></svg>
+        Katalog
+      </button>
+      <button type="button" class="nav-btn" data-tab="tebak" aria-label="Tab Tebak Kalori">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.4 9.2A2.7 2.7 0 1 1 12 12.2c-.7.15-1 .6-1 1.3v.4"/><circle cx="11" cy="17.2" r=".4" fill="currentColor"/></svg>
+        Tebak
+      </button>
+    </nav>
+
+    <!-- Portion sheet -->
+    <div class="sheet-backdrop" id="sheetBackdrop"></div>
+    <div class="sheet" id="portionSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+      <h3 id="sheetTitle"></h3>
+      <p class="sheet-sub" id="sheetSub"></p>
+      <div class="portion-grid" id="portionGrid"></div>
+      <button type="button" class="btn-cancel" id="sheetCancel">Batal</button>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+    'use strict';
+
+    /* ================= DATA: 51 makanan (TKPI Kemenkes dkk.) ================= */
+    var FOODS = [
+      ['Nasi putih','Nasi',270,'1 piring (150 g)'],
+      ['Nasi merah','Nasi',225,'1 piring (150 g)'],
+      ['Nasi goreng','Nasi',550,'1 piring'],
+      ['Nasi padang','Nasi',700,'1 piring'],
+      ['Nasi uduk','Nasi',390,'1 mangkok'],
+      ['Nasi campur','Nasi',600,'1 piring'],
+      ['Bubur ayam','Nasi',420,'1 mangkok'],
+      ['Lontong sayur','Nasi',600,'1 porsi'],
+      ['Mie ayam','Mie & Bakso',460,'1 mangkok'],
+      ['Mie ayam bakso','Mie & Bakso',580,'1 mangkok'],
+      ['Bakso','Mie & Bakso',450,'1 mangkok'],
+      ['Indomie goreng','Mie & Bakso',390,'1 bungkus'],
+      ['Mie instan kuah','Mie & Bakso',330,'1 bungkus'],
+      ['Kwetiau goreng','Mie & Bakso',520,'1 piring'],
+      ['Bihun goreng','Mie & Bakso',430,'1 piring'],
+      ['Soto mie','Mie & Bakso',380,'1 mangkok'],
+      ['Rendang','Lauk',200,'1 potong'],
+      ['Ayam goreng','Lauk',260,'1 potong'],
+      ['Ayam bakar','Lauk',200,'1 potong'],
+      ['Ayam geprek + nasi','Lauk',700,'1 piring'],
+      ['Gulai ayam','Lauk',250,'1 potong'],
+      ['Sate ayam','Lauk',365,'10 tusuk'],
+      ['Telur rebus','Lauk',80,'1 butir'],
+      ['Telur balado','Lauk',110,'1 butir'],
+      ['Tempe goreng','Lauk',35,'1 potong'],
+      ['Tahu goreng','Lauk',35,'1 potong'],
+      ['Bakwan','Gorengan',137,'1 buah'],
+      ['Tahu isi','Gorengan',134,'1 buah'],
+      ['Tempe mendoan','Gorengan',130,'1 buah'],
+      ['Pisang goreng','Gorengan',130,'1 buah'],
+      ['Cireng','Gorengan',140,'1 buah'],
+      ['Risoles','Gorengan',150,'1 buah'],
+      ['Martabak manis','Jajanan',270,'1 potong'],
+      ['Martabak telur','Jajanan',200,'1 potong'],
+      ['Klepon','Jajanan',160,'1 porsi'],
+      ['Onde-onde','Jajanan',180,'1 porsi'],
+      ['Lemper ayam','Jajanan',190,'1 buah'],
+      ['Pisang molen','Jajanan',150,'1 buah'],
+      ['Es teh manis','Minuman',100,'1 gelas'],
+      ['Kopi susu gula aren','Minuman',190,'1 gelas'],
+      ['Boba milk tea','Minuman',400,'1 gelas'],
+      ['Es jeruk','Minuman',100,'1 gelas'],
+      ['Kopi hitam','Minuman',5,'1 cangkir'],
+      ['Teh tawar','Minuman',0,'1 gelas'],
+      ['Es cendol','Minuman',270,'1 gelas'],
+      ['Thai tea','Minuman',220,'1 gelas'],
+      ['Pisang','Buah',105,'1 buah'],
+      ['Apel','Buah',95,'1 buah'],
+      ['Mangga','Buah',150,'1 buah'],
+      ['Jeruk','Buah',60,'1 buah'],
+      ['Pepaya','Buah',60,'1 potong']
+    ].map(function(r){ return { name:r[0], cat:r[1], kcal:r[2], portion:r[3] }; });
+
+    var CATEGORIES = ['Semua','Nasi','Mie & Bakso','Lauk','Gorengan','Jajanan','Minuman','Buah'];
+    var CAT_COLORS = {
+      'Nasi':'#047857',
+      'Mie & Bakso':'#0E7490',
+      'Lauk':'#BE123C',
+      'Gorengan':'#B45309',
+      'Jajanan':'#9D174D',
+      'Minuman':'#1D4ED8',
+      'Buah':'#4D7C0F'
+    };
+    var PORTIONS = [
+      { mult:0.5, label:'0,5x', desc:'Setengah porsi' },
+      { mult:1,   label:'1x',   desc:'Satu porsi' },
+      { mult:1.5, label:'1,5x', desc:'Satu setengah' },
+      { mult:2,   label:'2x',   desc:'Dua porsi' }
+    ];
+
+    /* ================= STORE: satu-satunya pintu localStorage ================= */
+    var Store = {
+      PREFIX:'kaloriku:',
+      get:function(key, fallback){
+        try{
+          var raw = localStorage.getItem(this.PREFIX + key);
+          return raw === null ? fallback : JSON.parse(raw);
+        }catch(e){ return fallback; }
+      },
+      set:function(key, value){
+        try{ localStorage.setItem(this.PREFIX + key, JSON.stringify(value)); }catch(e){ /* penyimpanan penuh/diblokir: aplikasi tetap jalan */ }
+      }
+    };
+
+    /* ================= STATE ================= */
+    var DAYS_FULL = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    var DAYS_SHORT = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+    var MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+    function dateKey(d){
+      var m = String(d.getMonth()+1).padStart(2,'0');
+      var day = String(d.getDate()).padStart(2,'0');
+      return d.getFullYear() + '-' + m + '-' + day;
+    }
+    var TODAY = dateKey(new Date());
+
+    var state = {
+      tab:'piring',
+      plate:[],            // item hari ini: {name, mult, multLabel, kcal}
+      plateDate: TODAY,
+      history:{},          // { 'YYYY-MM-DD': totalKkal } untuk hari-hari lampau
+      target:2000,
+      reached:{},          // { 'YYYY-MM-DD': true } penanda confetti target
+      best:null,           // skor kuis terbaik (null = belum pernah main)
+      search:'',
+      category:'Semua',
+      sheetFood:null,
+      confirmClear:false,
+      quiz:null            // { order:[foodIdx], round, score, answered, picked }
+    };
+
+    function loadState(){
+      state.target = Store.get('target', 2000);
+      state.history = Store.get('history', {});
+      state.reached = Store.get('reached', {});
+      state.best = Store.get('bestScore', null);
+
+      var savedPlate = Store.get('plate', null);
+      if (savedPlate && savedPlate.date && Array.isArray(savedPlate.items)){
+        if (savedPlate.date === TODAY){
+          state.plate = savedPlate.items;
+          state.plateDate = TODAY;
+        } else {
+          // Hari berganti: total piring kemarin pindah ke riwayat, piring hari ini kosong.
+          var oldTotal = savedPlate.items.reduce(function(s,i){ return s + i.kcal; }, 0);
+          if (oldTotal > 0) state.history[savedPlate.date] = oldTotal;
+          state.plate = [];
+          state.plateDate = TODAY;
+          saveHistory();
+          savePlate();
+        }
+      }
+    }
+    function savePlate(){ Store.set('plate', { date: state.plateDate, items: state.plate }); }
+    function saveHistory(){ Store.set('history', state.history); }
+    function saveTarget(){ Store.set('target', state.target); }
+    function saveReached(){ Store.set('reached', state.reached); }
+    function saveBest(){ Store.set('bestScore', state.best); }
+
+    function plateTotal(){ return state.plate.reduce(function(s,i){ return s + i.kcal; }, 0); }
+
+    /* ================= HELPERS ================= */
+    function $(id){ return document.getElementById(id); }
+    function fmt(n){ return Math.round(n).toLocaleString('id-ID'); }
+    function fmtDec(n){
+      var v = Math.round(n * 10) / 10;
+      return (Number.isInteger(v) ? String(v) : v.toFixed(1).replace('.', ',')) ;
+    }
+    function multLabel(m){ return String(m).replace('.', ',') + 'x'; }
+    function monogram(name){
+      var words = name.replace('+',' ').split(/\s+/).filter(Boolean);
+      if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+      return name.slice(0,2).toUpperCase();
+    }
+    function shuffle(arr){
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--){
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ================= TOAST ================= */
+    var toastTimer = null;
+    function showToast(msg){
+      var t = $('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+    }
+
+    /* ================= CONFETTI (hand-rolled, tanpa library) ================= */
+    function confetti(){
+      if (reducedMotion) return;
+      var colors = ['#059669','#10B981','#EA580C','#F59E0B','#0E7490','#BE123C'];
+      for (var i = 0; i < 42; i++){
+        var p = document.createElement('div');
+        p.className = 'confetti-piece';
+        var size = 6 + Math.random() * 7;
+        p.style.left = (8 + Math.random() * 84) + 'vw';
+        p.style.width = size + 'px';
+        p.style.height = (size * (0.5 + Math.random() * 0.9)) + 'px';
+        p.style.background = colors[i % colors.length];
+        p.style.setProperty('--dx', (Math.random() * 120 - 60) + 'px');
+        p.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+        p.style.animation = 'confettiFall ' + (1.4 + Math.random() * 1.1) + 's cubic-bezier(.2,.7,.4,1) ' + (Math.random() * 0.25) + 's forwards';
+        document.body.appendChild(p);
+        (function(el){ setTimeout(function(){ el.remove(); }, 3200); })(p);
+      }
+    }
+
+    /* ================= RING + COUNT-UP ================= */
+    var RING_C = 2 * Math.PI * 92;
+    var displayedNum = 0, countAnim = null;
+    function countUp(to){
+      var numEl = $('ringNum');
+      if (reducedMotion){ displayedNum = to; numEl.textContent = fmt(to); return; }
+      var from = displayedNum, start = null, dur = 650;
+      if (countAnim) cancelAnimationFrame(countAnim);
+      function step(ts){
+        if (!start) start = ts;
+        var p = Math.min((ts - start) / dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        displayedNum = Math.round(from + (to - from) * eased);
+        numEl.textContent = fmt(displayedNum);
+        if (p < 1) countAnim = requestAnimationFrame(step);
+      }
+      countAnim = requestAnimationFrame(step);
+    }
+
+    var ICON_WALK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8"/><path d="M10 20l1.2-4.2L9 13l1-4 3 1.5L15.5 13"/><path d="M11 9l-2 2-2.5 1"/><path d="M11.2 15.8L8.5 18 8 21"/></svg>';
+    var ICON_RUN = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="14.5" cy="4.5" r="1.8"/><path d="M13 8l-3.5 2L8 14"/><path d="M9.5 10L6 11 3.5 10"/><path d="M8 14l3 2.5L12 21"/><path d="M13 8l2.5 2 3 .5"/></svg>';
+    var ICON_RICE = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18a9 9 0 0 1-18 0z"/><path d="M8 8c1-1.5 2.5-2 4-2s3 .5 4 2"/></svg>';
+    var ICON_TEA = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l-1.5 18h-6z"/><path d="M6.8 9h7.4"/><path d="M13 3l3.5-1.5"/></svg>';
+
+    function renderRing(){
+      var total = plateTotal();
+      var prog = $('ringProg');
+      prog.style.strokeDasharray = RING_C;
+      var frac = state.target > 0 ? Math.min(total / state.target, 1) : 0;
+      prog.style.strokeDashoffset = RING_C * (1 - frac);
+      prog.classList.toggle('over', total > state.target);
+      countUp(total);
+
+      $('ringTarget').innerHTML = 'dari target <strong>' + fmt(state.target) + ' kkal</strong>';
+      var status = $('ringStatus');
+      if (total === 0){
+        status.textContent = 'Piringmu masih kosong, yuk mulai isi!';
+        status.className = 'ring-status ok';
+      } else if (total < state.target){
+        status.textContent = 'Sisa ' + fmt(state.target - total) + ' kkal lagi menuju target.';
+        status.className = 'ring-status ok';
+      } else if (total === state.target){
+        status.textContent = 'Pas! Target harian tercapai.';
+        status.className = 'ring-status ok';
+      } else {
+        status.textContent = 'Kelebihan ' + fmt(total - state.target) + ' kkal dari target.';
+        status.className = 'ring-status over';
+      }
+
+      var area = $('equivArea');
+      if (total === 0){
+        area.innerHTML = '<p class="empty-invite">Tambahkan makanan dari katalog, lalu lihat total kalorimu berubah jadi aktivitas seru di sini.</p>' +
+          '<button type="button" class="btn-catalog" id="inviteBtn">Lihat Katalog</button>';
+        $('inviteBtn').addEventListener('click', function(){ switchTab('katalog'); });
+      } else {
+        area.innerHTML = '<div class="equiv"><h3>Setara dengan</h3><div class="equiv-grid">' +
+          equivChip(ICON_WALK, fmt(Math.round(total / 4)), 'menit jalan kaki') +
+          equivChip(ICON_RUN, fmt(Math.round(total / 10)), 'menit lari') +
+          equivChip(ICON_RICE, fmtDec(total / 270), 'piring nasi putih') +
+          equivChip(ICON_TEA, fmtDec(total / 100), 'gelas es teh manis') +
+          '</div></div>';
+      }
+    }
+    function equivChip(icon, value, label){
+      return '<div class="equiv-chip">' + icon + '<div><div class="v">' + value + '</div><div class="l">' + label + '</div></div></div>';
+    }
+
+    /* ================= PIRING ================= */
+    var TRASH_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2"/><path d="M6.5 7l1 13h9l1-13"/><path d="M10 11v6M14 11v6"/></svg>';
+
+    function renderPlate(){
+      var list = $('plateList'), footer = $('plateFooter');
+      if (state.plate.length === 0){
+        list.innerHTML = '<div class="empty-state"><p><strong>Piringmu masih kosong.</strong><br>Buka tab Katalog, pilih makanan favoritmu, lalu tekan tombol Tambah. Semudah itu!</p></div>';
+        footer.innerHTML = '';
+        state.confirmClear = false;
+        return;
+      }
+      var html = '';
+      state.plate.forEach(function(item, idx){
+        html += '<div class="plate-item"><div class="info"><div class="name">' + item.name + '</div>' +
+          '<div class="portion">Porsi ' + multLabel(item.mult) + '</div></div>' +
+          '<div class="kcal">' + fmt(item.kcal) + ' <small>kkal</small></div>' +
+          '<button type="button" class="btn-trash" data-del="' + idx + '" aria-label="Hapus ' + item.name + ' dari piring">' + TRASH_ICON + '</button></div>';
+      });
+      list.innerHTML = html;
+      Array.prototype.forEach.call(list.querySelectorAll('[data-del]'), function(btn){
+        btn.addEventListener('click', function(){
+          var i = parseInt(btn.getAttribute('data-del'), 10);
+          var removed = state.plate[i];
+          state.plate.splice(i, 1);
+          savePlate();
+          renderPlate(); renderRing(); renderChart();
+          if (removed) showToast(removed.name + ' dihapus dari piring.');
+        });
+      });
+
+      if (state.confirmClear){
+        footer.innerHTML = '<div class="total-bar"><span class="t">Total hari ini</span><span class="n">' + fmt(plateTotal()) + ' kkal</span></div>' +
+          '<div class="confirm-row"><p>Hapus semua isi piring hari ini?</p><div class="row">' +
+          '<button type="button" class="btn-yes" id="clearYes">Ya, Kosongkan</button>' +
+          '<button type="button" class="btn-no" id="clearNo">Batal</button></div></div>';
+        $('clearYes').addEventListener('click', function(){
+          state.plate = []; state.confirmClear = false;
+          savePlate(); renderPlate(); renderRing(); renderChart();
+          showToast('Piring dikosongkan. Mulai lagi dari awal!');
+        });
+        $('clearNo').addEventListener('click', function(){ state.confirmClear = false; renderPlate(); });
+      } else {
+        footer.innerHTML = '<div class="total-bar"><span class="t">Total hari ini</span><span class="n">' + fmt(plateTotal()) + ' kkal</span></div>' +
+          '<button type="button" class="btn-clear" id="clearBtn">Kosongkan Piring</button>';
+        $('clearBtn').addEventListener('click', function(){ state.confirmClear = true; renderPlate(); });
+      }
+    }
+
+    /* ================= TARGET ================= */
+    function renderTarget(){
+      Array.prototype.forEach.call(document.querySelectorAll('#presets .preset'), function(btn){
+        btn.classList.toggle('active', parseInt(btn.getAttribute('data-target'), 10) === state.target);
+      });
+      var slider = $('targetSlider');
+      if (parseInt(slider.value, 10) !== state.target) slider.value = state.target;
+      $('targetOut').textContent = fmt(state.target) + ' kkal';
+    }
+    function setTarget(v){
+      state.target = Math.max(1200, Math.min(3500, v));
+      saveTarget();
+      renderTarget(); renderRing(); renderChart();
+    }
+
+    /* ================= RIWAYAT 7 HARI ================= */
+    function renderChart(){
+      var days = [];
+      for (var i = 6; i >= 0; i--){
+        var d = new Date(); d.setDate(d.getDate() - i);
+        var key = dateKey(d);
+        var val = (key === TODAY) ? plateTotal() : (state.history[key] || 0);
+        days.push({ label: DAYS_SHORT[d.getDay()], val: val, today: key === TODAY });
+      }
+      var max = Math.max.apply(null, days.map(function(d){ return d.val; }).concat([state.target, 1]));
+      var chartHtml = '', labelHtml = '';
+      days.forEach(function(d){
+        var h = Math.max(Math.round(d.val / max * 100), 2);
+        var cls = 'bar-col' + (d.today ? ' today' : '') + (d.val > state.target ? ' over' : '');
+        chartHtml += '<div class="' + cls + '"><span class="bar-val">' + fmt(d.val) + '</span><div class="bar" style="height:' + h + '%"></div></div>';
+        labelHtml += '<span class="' + (d.today ? 'today' : '') + '">' + d.label + '</span>';
+      });
+      $('chart').innerHTML = chartHtml;
+      $('chartLabels').innerHTML = labelHtml;
+    }
+
+    /* ================= KATALOG ================= */
+    function renderChips(){
+      var html = '';
+      CATEGORIES.forEach(function(cat){
+        html += '<button type="button" class="chip' + (state.category === cat ? ' active' : '') + '" data-cat="' + cat + '">' + cat + '</button>';
+      });
+      $('categoryChips').innerHTML = html;
+      Array.prototype.forEach.call(document.querySelectorAll('#categoryChips .chip'), function(chip){
+        chip.addEventListener('click', function(){
+          state.category = chip.getAttribute('data-cat');
+          renderChips(); renderCatalog();
+        });
+      });
+    }
+
+    function renderCatalog(){
+      var q = state.search.trim().toLowerCase();
+      var filtered = FOODS.filter(function(f){
+        var okCat = state.category === 'Semua' || f.cat === state.category;
+        var okQ = !q || f.name.toLowerCase().indexOf(q) !== -1;
+        return okCat && okQ;
+      });
+      var list = $('foodList');
+      if (filtered.length === 0){
+        list.innerHTML = '<p class="no-result">Tidak ada makanan yang cocok. Coba kata kunci atau kategori lain.</p>';
+        return;
+      }
+      var html = '';
+      filtered.forEach(function(f, i){
+        var delay = Math.min(i * 45, 400);
+        html += '<article class="food-card" style="animation-delay:' + delay + 'ms">' +
+          '<div class="mono" style="background:' + CAT_COLORS[f.cat] + '" aria-hidden="true">' + monogram(f.name) + '</div>' +
+          '<div class="info"><div class="name">' + f.name + '</div><div class="portion">' + f.portion + ' &middot; ' + f.cat + '</div></div>' +
+          '<div class="right"><div class="kcal">' + fmt(f.kcal) + '<small>kkal</small></div>' +
+          '<button type="button" class="btn-add" data-add="' + f.name + '"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Tambah</button></div></article>';
+      });
+      list.innerHTML = html;
+      Array.prototype.forEach.call(list.querySelectorAll('[data-add]'), function(btn){
+        btn.addEventListener('click', function(){
+          var name = btn.getAttribute('data-add');
+          var food = FOODS.filter(function(f){ return f.name === name; })[0];
+          if (food) openSheet(food);
+        });
+      });
+    }
+
+    /* ================= PORTION SHEET ================= */
+    function openSheet(food){
+      state.sheetFood = food;
+      $('sheetTitle').textContent = food.name;
+      $('sheetSub').textContent = food.portion + ' = ' + fmt(food.kcal) + ' kkal. Mau berapa porsi?';
+      var html = '';
+      PORTIONS.forEach(function(p){
+        html += '<button type="button" class="portion-opt" data-mult="' + p.mult + '">' +
+          '<span class="pm">' + p.label + '</span><span class="pd">' + p.desc + '</span>' +
+          '<span class="pk">' + fmt(Math.round(food.kcal * p.mult)) + ' kkal</span></button>';
+      });
+      $('portionGrid').innerHTML = html;
+      Array.prototype.forEach.call(document.querySelectorAll('#portionGrid .portion-opt'), function(btn){
+        btn.addEventListener('click', function(){
+          addToPlate(food, parseFloat(btn.getAttribute('data-mult')));
+          closeSheet();
+        });
+      });
+      var sheet = $('portionSheet');
+      sheet.hidden = false;
+      requestAnimationFrame(function(){
+        sheet.classList.add('open');
+        $('sheetBackdrop').classList.add('open');
+      });
+    }
+    function closeSheet(){
+      var sheet = $('portionSheet');
+      sheet.classList.remove('open');
+      $('sheetBackdrop').classList.remove('open');
+      setTimeout(function(){ sheet.hidden = true; }, reducedMotion ? 0 : 330);
+      state.sheetFood = null;
+    }
+
+    function addToPlate(food, mult){
+      var kcal = Math.round(food.kcal * mult);
+      state.plate.push({ name: food.name, mult: mult, kcal: kcal });
+      savePlate();
+      renderPlate(); renderRing(); renderChart();
+      showToast(food.name + ' masuk piring!');
+      checkTargetReached();
+    }
+
+    function checkTargetReached(){
+      var total = plateTotal();
+      if (total >= state.target && !state.reached[TODAY]){
+        state.reached[TODAY] = true;
+        saveReached();
+        setTimeout(function(){
+          confetti();
+          showToast('Hebat! Target ' + fmt(state.target) + ' kkal tercapai hari ini!');
+        }, 350);
+      }
+    }
+
+    /* ================= TEBAK KALORI (KUIS) ================= */
+    function round10(v){ return Math.round(v / 10) * 10; }
+
+    function makeOptions(food){
+      var correct = food.kcal;
+      var others = shuffle(FOODS.filter(function(f){ return f.name !== food.name; }));
+      var distractors = [];
+      for (var i = 0; i < others.length && distractors.length < 2; i++){
+        var v = round10(others[i].kcal);
+        if (v !== correct && distractors.indexOf(v) === -1) distractors.push(v);
+      }
+      // Cadangan pengaman bila kandidat unik kurang
+      var guard = 20;
+      while (distractors.length < 2 && guard-- > 0){
+        var cand = round10(correct + (Math.floor(Math.random() * 8) + 3) * 10 * (Math.random() < 0.5 ? -1 : 1));
+        if (cand >= 0 && cand !== correct && distractors.indexOf(cand) === -1) distractors.push(cand);
+      }
+      return shuffle([correct].concat(distractors));
+    }
+
+    function funFact(food){
+      var k = food.kcal;
+      var variants = [
+        food.name + ' ' + fmt(k) + ' kkal — sama dengan ' + fmt(Math.round(k / 4)) + ' menit jalan kaki.',
+        food.name + ' ' + fmt(k) + ' kkal — setara ' + fmtDec(k / 270) + ' piring nasi putih.',
+        food.name + ' ' + fmt(k) + ' kkal — sama dengan ' + fmt(Math.round(k / 10)) + ' menit lari.',
+        food.name + ' ' + fmt(k) + ' kkal — setara ' + fmtDec(k / 100) + ' gelas es teh manis.'
+      ];
+      return variants[Math.floor(Math.random() * variants.length)];
+    }
+
+    function renderQuizStart(){
+      var area = $('quizArea');
+      var bestHtml = state.best === null
+        ? '<span class="best-badge">Belum ada skor terbaik — jadilah yang pertama!</span>'
+        : '<span class="best-badge">Skor terbaikmu: ' + state.best + '/5</span>';
+      area.innerHTML = '<div class="quiz-start"><h2>Tebak Kalori</h2>' +
+        '<p>Seberapa kenal kamu dengan makanan Indonesia? Ada <strong>5 ronde</strong>: setiap ronde muncul satu makanan, dan kamu menebak kalorinya dari <strong>3 pilihan jawaban</strong>. Langsung ketahuan benar atau salahnya, plus fakta seru di tiap ronde.</p>' +
+        bestHtml + '<br><button type="button" class="btn-primary" id="quizStartBtn">Mulai Main</button></div>';
+      $('quizStartBtn').addEventListener('click', startQuiz);
+    }
+
+    function startQuiz(){
+      var idx = shuffle(FOODS.map(function(_, i){ return i; })).slice(0, 5);
+      state.quiz = { order: idx, round: 0, score: 0, answered: false, picked: null, options: null };
+      renderQuizRound();
+    }
+
+    function renderQuizRound(){
+      var quiz = state.quiz;
+      var food = FOODS[quiz.order[quiz.round]];
+      if (!quiz.options) quiz.options = makeOptions(food);
+      var area = $('quizArea');
+      var optsHtml = '';
+      quiz.options.forEach(function(v){
+        var cls = 'quiz-opt', dis = '';
+        if (quiz.answered){
+          dis = ' disabled';
+          if (v === food.kcal) cls += ' correct';
+          else if (v === quiz.picked) cls += ' wrong';
+        }
+        optsHtml += '<button type="button" class="' + cls + '" data-opt="' + v + '"' + dis + '>' + fmt(v) + ' <small>kkal</small></button>';
+      });
+      var factHtml = '';
+      if (quiz.answered){
+        var good = quiz.picked === food.kcal;
+        factHtml = '<div class="quiz-fact' + (good ? '' : ' bad') + '">' +
+          '<span class="verdict ' + (good ? 'good' : 'bad') + '">' + (good ? 'Benar! Tepat sekali.' : 'Yah, kurang tepat.') + '</span>' +
+          'Jawaban yang benar: <strong>' + fmt(food.kcal) + ' kkal</strong>. ' + funFact(food) + '</div>' +
+          '<button type="button" class="btn-primary btn-next" id="quizNextBtn">' + (quiz.round === 4 ? 'Lihat Hasil' : 'Ronde Berikutnya') + '</button>';
+      }
+      area.innerHTML =
+        '<div class="quiz-progress"><span class="rp">Ronde ' + (quiz.round + 1) + '/5</span><span class="rs">Skor: ' + quiz.score + '</span></div>' +
+        '<div class="progress-track"><div class="progress-fill" style="width:' + ((quiz.round + (quiz.answered ? 1 : 0)) / 5 * 100) + '%"></div></div>' +
+        '<div class="quiz-food"><div class="mono" style="background:' + CAT_COLORS[food.cat] + '" aria-hidden="true">' + monogram(food.name) + '</div>' +
+        '<div class="name">' + food.name + '</div><div class="portion">' + food.portion + '</div></div>' +
+        '<p class="quiz-q">Berapa kalori makanan ini?</p>' +
+        '<div class="quiz-options">' + optsHtml + '</div>' + factHtml;
+
+      Array.prototype.forEach.call(area.querySelectorAll('[data-opt]'), function(btn){
+        btn.addEventListener('click', function(){
+          if (state.quiz.answered) return;
+          state.quiz.picked = parseInt(btn.getAttribute('data-opt'), 10);
+          state.quiz.answered = true;
+          if (state.quiz.picked === food.kcal) state.quiz.score++;
+          renderQuizRound();
+        });
+      });
+      var next = $('quizNextBtn');
+      if (next) next.addEventListener('click', function(){
+        if (state.quiz.round === 4){ finishQuiz(); }
+        else { state.quiz.round++; state.quiz.answered = false; state.quiz.picked = null; state.quiz.options = null; renderQuizRound(); }
+      });
+    }
+
+    var SCORE_MSGS = {
+      0:'Belum beruntung kali ini. Namanya juga menebak — coba lagi, siapa tahu ronde berikutnya berpihak padamu!',
+      1:'Baru satu yang benar. Pelan-pelan saja, lama-lama kamu hafal kalori makanan favoritmu.',
+      2:'Dua benar! Naluri kalorimu mulai terbentuk. Sedikit lagi latihan, pasti naik.',
+      3:'Tiga dari lima — lumayan! Kamu sudah lebih jago dari kebanyakan orang soal menebak kalori.',
+      4:'Empat benar, nyaris sempurna! Tinggal satu langkah lagi jadi master kalori.',
+      5:'Sempurna, 5 dari 5! Kamu resmi Master Kalori. Perut dan otak sama-sama kenyang ilmu.'
+    };
+
+    function finishQuiz(){
+      var quiz = state.quiz;
+      var score = quiz.score;
+      var isNewBest = state.best === null || score > state.best;
+      if (isNewBest){ state.best = score; saveBest(); }
+      state.quiz = null;
+      var area = $('quizArea');
+      area.innerHTML = '<div class="quiz-result"><h2>Hasil Tebak Kalori</h2>' +
+        '<div class="score">' + score + '<small>/5</small></div>' +
+        '<p class="msg">' + SCORE_MSGS[score] + '</p>' +
+        (isNewBest && score > 0 ? '<p class="newbest">Rekor baru! Skor terbaikmu sekarang ' + score + '/5.</p>' : '<p class="plain">Skor terbaikmu: ' + state.best + '/5.</p>') +
+        '<button type="button" class="btn-primary" id="quizAgainBtn">Main Lagi</button></div>';
+      $('quizAgainBtn').addEventListener('click', startQuiz);
+      if (score === 5) setTimeout(confetti, 250);
+    }
+
+    /* ================= TAB NAVIGATION ================= */
+    function switchTab(tab){
+      // Keluar dari tab Tebak di tengah kuis = kuis batal, skor tidak disimpan.
+      if (state.tab === 'tebak' && tab !== 'tebak' && state.quiz){
+        state.quiz = null;
+        renderQuizStart();
+      }
+      state.tab = tab;
+      Array.prototype.forEach.call(document.querySelectorAll('.tab-panel'), function(p){ p.classList.remove('active'); });
+      $('panel-' + tab).classList.add('active');
+      Array.prototype.forEach.call(document.querySelectorAll('.nav-btn'), function(b){
+        b.classList.toggle('active', b.getAttribute('data-tab') === tab);
+      });
+      window.scrollTo(0, 0);
+    }
+
+    /* ================= INIT ================= */
+    function init(){
+      loadState();
+
+      var now = new Date();
+      $('todayDate').textContent = DAYS_FULL[now.getDay()] + ', ' + now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+
+      var prog = $('ringProg');
+      prog.style.strokeDasharray = RING_C;
+      prog.style.strokeDashoffset = RING_C;
+
+      Array.prototype.forEach.call(document.querySelectorAll('.nav-btn'), function(btn){
+        btn.addEventListener('click', function(){ switchTab(btn.getAttribute('data-tab')); });
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll('#presets .preset'), function(btn){
+        btn.addEventListener('click', function(){ setTarget(parseInt(btn.getAttribute('data-target'), 10)); });
+      });
+      $('targetSlider').addEventListener('input', function(e){ setTarget(parseInt(e.target.value, 10)); });
+
+      $('searchInput').addEventListener('input', function(e){
+        state.search = e.target.value;
+        renderCatalog();
+      });
+
+      $('sheetBackdrop').addEventListener('click', closeSheet);
+      $('sheetCancel').addEventListener('click', closeSheet);
+      document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape' && state.sheetFood) closeSheet();
+      });
+
+      renderRing();
+      renderPlate();
+      renderTarget();
+      renderChart();
+      renderChips();
+      renderCatalog();
+      renderQuizStart();
+      // Ring & angka dimuat ulang dari nilai tersimpan: jalankan hitung-naik sekali lagi setelah cat pertama.
+      displayedNum = 0;
+      renderRing();
+    }
+
+    init();
+    </script>
+  </body>
+</html>
