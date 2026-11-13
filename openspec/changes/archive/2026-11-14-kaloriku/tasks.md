@@ -14,7 +14,7 @@
 - [x] 4. Verify — cocokkan SHALL-01..22, alur penuh tanpa error console, cek 360px, cek localStorage
 - [x] 5. Export artifact → salin source ke `src/` di folder project
 - [x] 6. README.md lengkap di root project
-- [ ] 7. Git init + commit, buat repo `junanda24/daily-kaloriku`, push, verifikasi via API
-- [ ] 8. Update BUILT.md
-- [ ] 9. Update profile README `junanda24/junanda24` (tabel Project harian) + push + verifikasi
-- [ ] 10. Archive openspec change + catat di `~/memory/2026-11-14.md` + tracking entry
+- [x] 7. Git init + commit, buat repo `junanda24/daily-kaloriku`, push, verifikasi via API
+- [x] 8. Update BUILT.md
+- [x] 9. Update profile README `junanda24/junanda24` (tabel Project harian) + push + verifikasi
+- [x] 10. Archive openspec change + catat di `~/memory/2026-11-14.md` + tracking entry
